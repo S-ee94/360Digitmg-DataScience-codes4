@@ -1,0 +1,88 @@
+import pandas as pd
+import streamlit as st 
+import numpy as np
+import pyodbc
+import pickle, joblib
+
+
+model1 = pickle.load(open('my_dataframe_svm.pkl', 'wb'))
+encoding = joblib.load('processed1 (1)')
+
+
+def predict_salary(data, user, pw, db):
+    conn = pyodbc.connect('Driver={SQL Server Native Client 11.0};'
+                          'Server=LAPTOP-F819LJM9\SQLEXPRESS;'
+                          'Database=digitmg;'
+                          'Trusted_Connection=yes;')
+
+    clean = pd.DataFrame(impute.transform(data),columns=data.select_dtypes(exclude = ['object']).columns)
+    clean2 = pd.DataFrame(minmax.transform(clean))
+    clean3 = pd.DataFrame(encoding.transform(data).todense())
+    clean_data = pd.concat([clean2, clean3], axis = 1, ignore_index = True)
+    clean_data1 = clean_data.drop(3, axis = 1)
+    prediction = pd.DataFrame(model1.predict(clean_data1), columns = ['Predict_profit'])
+    
+   
+
+    return final
+
+
+
+def main():
+    
+
+    st.title("income levels of residents")
+    st.sidebar.title("suburban locality with new infrastructure")
+
+    # st.radio('Type of Cab you want to Book', options=['Mini', 'Sedan', 'XL', 'Premium', 'Rental'])
+    html_temp = """
+    <div style="background-color:tomato;padding:10px">
+    <h2 style="color:white;text-align:center;">Cars Fuel Efficiency Prediction App </h2>
+    </div>
+    
+    """
+    st.markdown(html_temp, unsafe_allow_html = True)
+    st.text("")
+    
+
+    uploadedFile = st.sidebar.file_uploader("Choose a file" ,type=['csv','xlsx'],accept_multiple_files=False,key="fileUploader")
+    if uploadedFile is not None :
+        try:
+
+            data=pd.read_csv(uploadedFile)
+        except:
+                try:
+                    data = pd.read_excel(uploadedFile)
+                except:      
+                    df=pd.DataFrame()
+        
+        
+    else:
+        st.sidebar.warning("you need to upload a csv or excel file.")
+    
+    html_temp = """
+    <div style="background-color:tomato;padding:10px">
+    <p style="color:white;text-align:center;">Add DataBase Credientials </p>
+    </div>
+    """
+    st.sidebar.markdown(html_temp, unsafe_allow_html = True)
+            
+    user = st.sidebar.text_input("user", "Type Here")
+    pw = st.sidebar.text_input("password", "Type Here")
+    db = st.sidebar.text_input("database", "Type Here")
+    
+    result = ""
+    
+    if st.button("Predict"):
+        result = predict_salary(data, user, pw, db)
+        #st.dataframe(result) or
+        #st.table(result.style.set_properties(**{'background-color': 'white','color': 'black'}))
+                           
+        import seaborn as sns
+        cm = sns.light_palette("blue", as_cmap=True)
+        st.table(result.style.background_gradient(cmap=cm).set_precision(2))
+
+                           
+if __name__=='__main__':
+    main()
+
